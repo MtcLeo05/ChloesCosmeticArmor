@@ -1,0 +1,22 @@
+{
+    "Group": "Cosmetics",
+    "Name": "Chloe's Cosmetic Armor",
+    "Version": "0.0.1",
+    "Description": "A mod that allows wearing armor purely for the cosmetics",
+    "Authors": [
+        {
+            "Name": "MtChloe05"
+        }
+    ],
+    "Website": "nan",
+    "ServerVersion": "*",
+    "Dependencies": {
+        
+    },
+    "OptionalDependencies": {
+        
+    },
+    "DisabledByDefault": false,
+    "Main": "com.chloe.plugin.ChloesCosmeticArmor",
+    "IncludesAssetPack": true
+}
