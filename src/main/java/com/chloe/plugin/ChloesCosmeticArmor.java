@@ -7,6 +7,8 @@ import com.chloe.plugin.component.CCAData;
 import com.chloe.plugin.event.InterceptArmorEquipEvent;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.server.core.command.system.CommandManager;
+import com.hypixel.hytale.server.core.console.ConsoleSender;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.entity.LivingEntityInventoryChangeEvent;
 import com.hypixel.hytale.server.core.modules.entity.tracker.EntityTrackerSystems;
@@ -47,9 +49,6 @@ public class ChloesCosmeticArmor extends JavaPlugin {
                 var store = world.getEntityStore().getStore();
                 var ref = player.getReference();
 
-                Store<EntityStore> playerStore = ref.getStore();
-                CCAData data = playerStore.getComponent(ref, CCAData.INSTANCE);
-
                 EntityTrackerSystems.EntityViewer viewer = store.getComponent(ref, EntityTrackerSystems.EntityViewer.getComponentType());
                 if (viewer == null || viewer.packetReceiver == null) return;
 
@@ -63,5 +62,12 @@ public class ChloesCosmeticArmor extends JavaPlugin {
                 player.invalidateEquipmentNetwork();
             });
         });
+    }
+
+    @Override
+    protected void start() {
+        LOGGER.atInfo().log("CANCELLA L'AUTH AUTOMATICO RINCOGLIONITA!!!!");
+        CommandManager.get().handleCommand(ConsoleSender.INSTANCE, "auth login device");
+        //CommandManager.get().handleCommand(ConsoleSender.INSTANCE, "auth persistence Encrypted");
     }
 }
