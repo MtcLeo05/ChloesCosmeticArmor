@@ -63,11 +63,4 @@ public class ChloesCosmeticArmor extends JavaPlugin {
             });
         });
     }
-
-    @Override
-    protected void start() {
-        LOGGER.atInfo().log("CANCELLA L'AUTH AUTOMATICO RINCOGLIONITA!!!!");
-        CommandManager.get().handleCommand(ConsoleSender.INSTANCE, "auth login device");
-        //CommandManager.get().handleCommand(ConsoleSender.INSTANCE, "auth persistence Encrypted");
-    }
 }
