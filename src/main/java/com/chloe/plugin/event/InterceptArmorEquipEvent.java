@@ -1,7 +1,6 @@
 package com.chloe.plugin.event;
 
 import com.chloe.plugin.component.CCAData;
-import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.protocol.*;
@@ -9,7 +8,6 @@ import com.hypixel.hytale.protocol.packets.entities.EntityUpdates;
 import com.hypixel.hytale.server.core.receiver.IPacketReceiver;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
-import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import javax.annotation.Nonnull;
@@ -117,8 +115,8 @@ public class InterceptArmorEquipEvent implements IPacketReceiver {
                 newEu.updates[j] = newCu;
             }
         }
-        if (!modified)
-            return packet;
+
+        if (!modified) return packet;
 
         EntityUpdates out = new EntityUpdates();
         out.removed = eu.removed;

@@ -1,6 +1,7 @@
 package com.chloe.plugin.command;
 
 import com.chloe.plugin.component.CCAData;
+import com.chloe.plugin.event.InterceptArmorEquipEvent;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
@@ -18,6 +19,7 @@ import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayer
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.entity.LivingEntityInventoryChangeEvent;
 import com.hypixel.hytale.server.core.inventory.transaction.ClearTransaction;
+import com.hypixel.hytale.server.core.modules.entity.tracker.EntityTrackerSystems;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -51,6 +53,11 @@ public class CCATestItemDeleteCommand extends AbstractPlayerCommand {
 
         Store<EntityStore> playerStore = ref.getStore();
         CCAData data = playerStore.getComponent(ref, CCAData.INSTANCE);
+
+        if(data == null) {
+            playerStore.addComponent(ref, CCAData.INSTANCE, new CCAData());
+            data = playerStore.getComponent(ref, CCAData.INSTANCE);
+        }
 
         String armor = armorType.get(ctx);
 
@@ -89,6 +96,19 @@ public class CCATestItemDeleteCommand extends AbstractPlayerCommand {
         if(dispatcher.hasListener()) {
             LivingEntityInventoryChangeEvent event = new LivingEntityInventoryChangeEvent(senderPlayer, senderPlayer.getInventory().getArmor(), ClearTransaction.EMPTY);
             dispatcher.dispatch(event);
+
+            EntityTrackerSystems.EntityViewer viewer = store.getComponent(ref, EntityTrackerSystems.EntityViewer.getComponentType());
+            if (viewer == null || viewer.packetReceiver == null) return;
+
+            if (!(viewer.packetReceiver instanceof InterceptArmorEquipEvent)) {
+                viewer.packetReceiver = new InterceptArmorEquipEvent(
+                    viewer.packetReceiver,
+                    senderPlayer.getUuid(),
+                    senderPlayer.getNetworkId()
+                );
+            }
+
+            senderPlayer.invalidateEquipmentNetwork();
         }
     }
 }
