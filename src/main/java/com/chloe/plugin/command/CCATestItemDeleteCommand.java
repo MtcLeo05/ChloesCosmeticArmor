@@ -35,7 +35,7 @@ public class CCATestItemDeleteCommand extends AbstractPlayerCommand {
         super("cca-clear-item", "Manually clears an item in one of the cosmetic armor slots");
 
         armorType = withRequiredArg("armor", "Armor slot to target", ArgTypes.STRING);
-        setPermissionGroup(GameMode.Adventure);
+        setPermissionGroup(GameMode.Creative);
     }
 
     @Override

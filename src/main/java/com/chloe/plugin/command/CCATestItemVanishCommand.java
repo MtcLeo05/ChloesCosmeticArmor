@@ -4,7 +4,6 @@ import com.chloe.plugin.component.CCAData;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.event.IEventDispatcher;
-import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.protocol.ItemArmorSlot;
 import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.Message;
@@ -34,7 +33,6 @@ public class CCATestItemVanishCommand extends AbstractPlayerCommand {
         super("cca-vanish-item", "Manually vanishes an item in one of the cosmetic armor slots");
 
         armorType = withRequiredArg("armor", "Armor slot to target", ArgTypes.STRING);
-        setPermissionGroup(GameMode.Adventure);
     }
 
 
