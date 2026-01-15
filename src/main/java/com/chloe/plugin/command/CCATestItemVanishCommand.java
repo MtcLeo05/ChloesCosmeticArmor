@@ -6,10 +6,8 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.event.IEventDispatcher;
 import com.hypixel.hytale.protocol.GameMode;
-import com.hypixel.hytale.protocol.ItemArmorSlot;
 import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.Message;
-import com.hypixel.hytale.server.core.asset.type.item.config.ItemArmor;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.CommandSender;
 import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
@@ -17,7 +15,6 @@ import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.entity.LivingEntityInventoryChangeEvent;
-import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.transaction.ClearTransaction;
 import com.hypixel.hytale.server.core.modules.entity.tracker.EntityTrackerSystems;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -95,18 +92,7 @@ public class CCATestItemVanishCommand extends AbstractPlayerCommand {
             LivingEntityInventoryChangeEvent event = new LivingEntityInventoryChangeEvent(senderPlayer, senderPlayer.getInventory().getArmor(), ClearTransaction.EMPTY);
             dispatcher.dispatch(event);
 
-            EntityTrackerSystems.EntityViewer viewer = store.getComponent(ref, EntityTrackerSystems.EntityViewer.getComponentType());
-            if (viewer == null || viewer.packetReceiver == null) return;
-
-            if (!(viewer.packetReceiver instanceof InterceptArmorEquipEvent)) {
-                viewer.packetReceiver = new InterceptArmorEquipEvent(
-                    viewer.packetReceiver,
-                    senderPlayer.getUuid(),
-                    senderPlayer.getNetworkId()
-                );
-            }
-
-            senderPlayer.invalidateEquipmentNetwork();
+            InterceptArmorEquipEvent.interceptEvent(ref, senderPlayer);
         }
     }
 }

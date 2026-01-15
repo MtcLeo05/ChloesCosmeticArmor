@@ -4,21 +4,19 @@ import com.chloe.plugin.command.CCATestItemDeleteCommand;
 import com.chloe.plugin.command.CCATestItemInsertCommand;
 import com.chloe.plugin.command.CCATestItemVanishCommand;
 import com.chloe.plugin.component.CCAData;
-import com.hypixel.hytale.logger.HytaleLogger;
-import com.hypixel.hytale.server.core.command.system.CommandManager;
-import com.hypixel.hytale.server.core.console.ConsoleSender;
+import com.chloe.plugin.event.InterceptArmorEquipEvent;
+import com.chloe.plugin.interaction.OpenMagicMirrorInteraction;
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.event.events.entity.LivingEntityInventoryChangeEvent;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import javax.annotation.Nonnull;
 
-/**
- * This class serves as the entrypoint for your plugin. Use the setup method to register into game registries or add
- * event listeners.
- */
 public class ChloesCosmeticArmor extends JavaPlugin {
-
-    private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
 
     public ChloesCosmeticArmor(@Nonnull JavaPluginInit init) {
         super(init);
@@ -32,5 +30,15 @@ public class ChloesCosmeticArmor extends JavaPlugin {
         getCommandRegistry().registerCommand(new CCATestItemInsertCommand());
         getCommandRegistry().registerCommand(new CCATestItemDeleteCommand());
         getCommandRegistry().registerCommand(new CCATestItemVanishCommand());
+
+        getCodecRegistry(Interaction.CODEC).register("CCA_OpenMirror", OpenMagicMirrorInteraction.class, OpenMagicMirrorInteraction.CODEC);
+
+        getEventRegistry().registerGlobal(LivingEntityInventoryChangeEvent.class, event -> {
+            if(!(event.getEntity() instanceof Player player)) return;
+
+            Ref<EntityStore> ref = player.getReference();
+
+            InterceptArmorEquipEvent.interceptEvent(ref, player);
+        });
     }
 }

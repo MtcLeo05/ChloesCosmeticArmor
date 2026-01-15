@@ -5,6 +5,8 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.protocol.*;
 import com.hypixel.hytale.protocol.packets.entities.EntityUpdates;
+import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.modules.entity.tracker.EntityTrackerSystems;
 import com.hypixel.hytale.server.core.receiver.IPacketReceiver;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
@@ -45,6 +47,12 @@ public class InterceptArmorEquipEvent implements IPacketReceiver {
         Store<EntityStore> store = ref.getStore();
 
         CCAData data = store.getComponent(ref, CCAData.INSTANCE);
+
+        if (data == null) {
+            store.addComponent(ref, CCAData.INSTANCE, new CCAData());
+            data = store.getComponent(ref, CCAData.INSTANCE);
+        }
+
         Optional<String>[] armor = data.getReadyArmor();
 
         boolean modified = false;
@@ -122,5 +130,26 @@ public class InterceptArmorEquipEvent implements IPacketReceiver {
         out.removed = eu.removed;
         out.updates = newEus;
         return out;
+    }
+
+    public static void interceptEvent(Ref<EntityStore> ref, Player player) {
+        if (ref == null) return;
+
+        player.getWorld().execute(() -> {
+            Store<EntityStore> store = ref.getStore();
+            EntityTrackerSystems.EntityViewer viewer = store.getComponent(ref, EntityTrackerSystems.EntityViewer.getComponentType());
+
+            if (viewer == null || viewer.packetReceiver == null) return;
+
+            if (!(viewer.packetReceiver instanceof InterceptArmorEquipEvent)) {
+                viewer.packetReceiver = new InterceptArmorEquipEvent(
+                    viewer.packetReceiver,
+                    player.getUuid(),
+                    player.getNetworkId()
+                );
+            }
+
+            player.invalidateEquipmentNetwork();
+        });
     }
 }

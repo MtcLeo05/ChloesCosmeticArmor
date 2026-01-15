@@ -2,31 +2,26 @@ package com.chloe.plugin.command;
 
 import com.chloe.plugin.component.CCAData;
 import com.chloe.plugin.event.InterceptArmorEquipEvent;
-import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.event.IEventDispatcher;
 import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.Message;
-import com.hypixel.hytale.server.core.command.system.AbstractCommand;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.CommandSender;
 import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
-import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncCommand;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.entity.LivingEntityInventoryChangeEvent;
 import com.hypixel.hytale.server.core.inventory.transaction.ClearTransaction;
 import com.hypixel.hytale.server.core.modules.entity.tracker.EntityTrackerSystems;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import javax.annotation.Nonnull;
-import java.util.concurrent.CompletableFuture;
 
 import static com.hypixel.hytale.server.core.command.commands.player.inventory.InventorySeeCommand.MESSAGE_COMMANDS_ERRORS_PLAYER_NOT_IN_WORLD;
 
@@ -37,7 +32,7 @@ public class CCATestItemDeleteCommand extends AbstractPlayerCommand {
         super("cca-clear-item", "Manually clears an item in one of the cosmetic armor slots");
 
         armorType = withRequiredArg("armor", "Armor slot to target", ArgTypes.STRING);
-        setPermissionGroup(GameMode.Adventure);
+        setPermissionGroups("OP");
     }
 
     @Override
@@ -97,18 +92,7 @@ public class CCATestItemDeleteCommand extends AbstractPlayerCommand {
             LivingEntityInventoryChangeEvent event = new LivingEntityInventoryChangeEvent(senderPlayer, senderPlayer.getInventory().getArmor(), ClearTransaction.EMPTY);
             dispatcher.dispatch(event);
 
-            EntityTrackerSystems.EntityViewer viewer = store.getComponent(ref, EntityTrackerSystems.EntityViewer.getComponentType());
-            if (viewer == null || viewer.packetReceiver == null) return;
-
-            if (!(viewer.packetReceiver instanceof InterceptArmorEquipEvent)) {
-                viewer.packetReceiver = new InterceptArmorEquipEvent(
-                    viewer.packetReceiver,
-                    senderPlayer.getUuid(),
-                    senderPlayer.getNetworkId()
-                );
-            }
-
-            senderPlayer.invalidateEquipmentNetwork();
+            InterceptArmorEquipEvent.interceptEvent(ref, senderPlayer);
         }
     }
 }

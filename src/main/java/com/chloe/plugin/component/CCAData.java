@@ -1,13 +1,14 @@
 package com.chloe.plugin.component;
 
+import com.google.gson.JsonElement;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.protocol.ItemArmorSlot;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
-import com.hypixel.hytale.server.core.inventory.container.SimpleItemContainer;
-import com.hypixel.hytale.server.core.inventory.container.filter.FilterActionType;
+import com.hypixel.hytale.server.core.inventory.container.*;
+import com.hypixel.hytale.server.core.inventory.container.filter.*;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import javax.annotation.Nullable;
@@ -17,21 +18,22 @@ public class CCAData implements Component<EntityStore> {
 
     public static ComponentType<EntityStore, CCAData> INSTANCE;
 
-    public static final BuilderCodec<CCAData> CODEC = BuilderCodec.builder(CCAData.class, CCAData::new).append(new KeyedCodec<>("Head", SimpleItemContainer.CODEC), (data, value) -> data.head = value, (data) -> data.head).add().append(new KeyedCodec<>("Chest", SimpleItemContainer.CODEC), (data, value) -> data.chest = value, (data) -> data.chest).add().append(new KeyedCodec<>("Hands", SimpleItemContainer.CODEC), (data, value) -> data.hands = value, (data) -> data.hands).add().append(new KeyedCodec<>("Legs", SimpleItemContainer.CODEC), (data, value) -> data.legs = value, (data) -> data.legs).add().build();
+    public static final BuilderCodec<CCAData> CODEC = BuilderCodec.builder(CCAData.class, CCAData::new)
+        .append(new KeyedCodec<>("CCA_CosmeticArmor", SimpleItemContainer.CODEC), (data, value) -> {
+            data.armor = value;
+            applyArmorFilters(data.armor);
+        }, (data) -> data.armor)
+        .add()
+        .build();
 
-    private SimpleItemContainer head, chest, hands, legs;
-    private boolean headV, chestV,  handsV, legsV;
+    private SimpleItemContainer armor;
+
+    private boolean headV, chestV, handsV, legsV;
 
     public CCAData() {
-        head = new SimpleItemContainer((short) 1);
-        chest = new SimpleItemContainer((short) 1);
-        hands = new SimpleItemContainer((short) 1);
-        legs = new SimpleItemContainer((short) 1);
+        armor = new SimpleItemContainer((short) 4);
 
-        head.setSlotFilter(FilterActionType.ADD, (short) 0, (t, s, c, i) -> i.getItem().getArmor().getArmorSlot() == ItemArmorSlot.Head);
-        chest.setSlotFilter(FilterActionType.ADD, (short) 0, (t, s, c, i) -> i.getItem().getArmor().getArmorSlot() == ItemArmorSlot.Chest);
-        hands.setSlotFilter(FilterActionType.ADD, (short) 0, (t, s, c, i) -> i.getItem().getArmor().getArmorSlot() == ItemArmorSlot.Hands);
-        legs.setSlotFilter(FilterActionType.ADD, (short) 0, (t, s, c, i) -> i.getItem().getArmor().getArmorSlot() == ItemArmorSlot.Legs);
+        applyArmorFilters(armor);
 
         headV = false;
         chestV = false;
@@ -44,28 +46,65 @@ public class CCAData implements Component<EntityStore> {
     public Component<EntityStore> clone() {
         CCAData copy = new CCAData();
 
-        copy.head = this.head;
-        copy.chest = this.chest;
-        copy.hands = this.hands;
-        copy.legs = this.legs;
+        copy.armor = this.armor;
+
+        applyArmorFilters(copy.armor);
+
+        copy.headV = this.headV;
+        copy.chestV = this.chestV;
+        copy.handsV = this.handsV;
+        copy.legsV = this.legsV;
 
         return copy;
     }
 
+    //Game seems to often forget that the armor has filters, so I simply re-apply them every occasion
+    private static void applyArmorFilters(SimpleItemContainer armor) {
+        ItemArmorSlot[] itemArmorSlots = ItemArmorSlot.VALUES;
+
+        for (short i = 0; i < armor.getCapacity(); ++i) {
+            if (i < itemArmorSlots.length) {
+                if (i < 5) {
+                    armor.setSlotFilter(FilterActionType.ADD, i, new ArmorSlotAddFilter(itemArmorSlots[i]));
+                } else {
+                    armor.setSlotFilter(FilterActionType.ADD, i, new NoDuplicateFilter(armor));
+                }
+            } else {
+                armor.setSlotFilter(FilterActionType.ADD, i, SlotFilter.DENY);
+            }
+        }
+    }
+
+    public boolean headV() {
+        return headV;
+    }
+
+    public boolean chestV() {
+        return chestV;
+    }
+
+    public boolean handsV() {
+        return handsV;
+    }
+
+    public boolean legsV() {
+        return legsV;
+    }
+
     public ItemStack setHead(ItemStack item) {
-        return head.setItemStackForSlot((short) 0, item).getRemainder();
+        return armor.setItemStackForSlot((short) 0, item).getRemainder();
     }
 
     public ItemStack setChest(ItemStack item) {
-        return chest.setItemStackForSlot((short) 0, item).getRemainder();
+        return armor.setItemStackForSlot((short) 1, item).getRemainder();
     }
 
     public ItemStack setHands(ItemStack item) {
-        return hands.setItemStackForSlot((short) 0, item).getRemainder();
+        return armor.setItemStackForSlot((short) 2, item).getRemainder();
     }
 
     public ItemStack setLegs(ItemStack item) {
-        return legs.setItemStackForSlot((short) 0, item).getRemainder();
+        return armor.setItemStackForSlot((short) 3, item).getRemainder();
     }
 
     public boolean vanishHead() {
@@ -90,38 +129,38 @@ public class CCAData implements Component<EntityStore> {
 
     @Nullable
     public ItemStack getHead() {
-        return head.getItemStack((short) 0);
+        return armor.getItemStack((short) 0);
     }
 
     @Nullable
     public ItemStack getChest() {
-        return chest.getItemStack((short) 0);
+        return armor.getItemStack((short) 1);
     }
 
     @Nullable
     public ItemStack getHands() {
-        return hands.getItemStack((short) 0);
+        return armor.getItemStack((short) 2);
     }
 
     @Nullable
     public ItemStack getLegs() {
-        return legs.getItemStack((short) 0);
+        return armor.getItemStack((short) 3);
     }
 
     public void clearHead() {
-        head.clear();
+        armor.setItemStackForSlot((short) 0, ItemStack.EMPTY);
     }
 
     public void clearChest() {
-        chest.clear();
+        armor.setItemStackForSlot((short) 1, ItemStack.EMPTY);
     }
 
     public void clearHands() {
-        hands.clear();
+        armor.setItemStackForSlot((short) 2, ItemStack.EMPTY);
     }
 
     public void clearLegs() {
-        legs.clear();
+        armor.setItemStackForSlot((short) 3, ItemStack.EMPTY);
     }
 
     public Optional<String>[] getReadyArmor() {
@@ -130,11 +169,15 @@ public class CCAData implements Component<EntityStore> {
         ItemStack hands = getHands();
         ItemStack legs = getLegs();
 
-        Optional<String> headS = Optional.ofNullable(headV? "": head == null || head.isEmpty() ? null : head.getItemId());
-        Optional<String> chestS = Optional.ofNullable(chestV? "": chest == null || chest.isEmpty() ? null : chest.getItemId());
-        Optional<String> handsS = Optional.ofNullable(handsV? "": hands == null || hands.isEmpty() ? null : hands.getItemId());
-        Optional<String> legsS = Optional.ofNullable(legsV? "": legs == null || legs.isEmpty() ? null : legs.getItemId());
+        Optional<String> headS = Optional.ofNullable(headV ? "" : head == null || head.isEmpty() ? null : head.getItemId());
+        Optional<String> chestS = Optional.ofNullable(chestV ? "" : chest == null || chest.isEmpty() ? null : chest.getItemId());
+        Optional<String> handsS = Optional.ofNullable(handsV ? "" : hands == null || hands.isEmpty() ? null : hands.getItemId());
+        Optional<String> legsS = Optional.ofNullable(legsV ? "" : legs == null || legs.isEmpty() ? null : legs.getItemId());
 
         return new Optional[]{headS, chestS, handsS, legsS};
+    }
+
+    public ItemContainer getArmor() {
+        return armor;
     }
 }

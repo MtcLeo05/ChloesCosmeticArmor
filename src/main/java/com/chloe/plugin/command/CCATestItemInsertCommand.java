@@ -36,7 +36,7 @@ public class CCATestItemInsertCommand extends AbstractPlayerCommand {
         super("cca-set-item", "Manually sets an item in one of the cosmetic armor slots");
 
         armorType = withRequiredArg("armor", "Armor slot to target", ArgTypes.STRING);
-        setPermissionGroup(GameMode.Adventure);
+        setPermissionGroups("OP");
     }
 
 
@@ -133,18 +133,7 @@ public class CCATestItemInsertCommand extends AbstractPlayerCommand {
             LivingEntityInventoryChangeEvent event = new LivingEntityInventoryChangeEvent(senderPlayer, senderPlayer.getInventory().getArmor(), ClearTransaction.EMPTY);
             dispatcher.dispatch(event);
 
-            EntityTrackerSystems.EntityViewer viewer = store.getComponent(ref, EntityTrackerSystems.EntityViewer.getComponentType());
-            if (viewer == null || viewer.packetReceiver == null) return;
-
-            if (!(viewer.packetReceiver instanceof InterceptArmorEquipEvent)) {
-                viewer.packetReceiver = new InterceptArmorEquipEvent(
-                    viewer.packetReceiver,
-                    senderPlayer.getUuid(),
-                    senderPlayer.getNetworkId()
-                );
-            }
-
-            senderPlayer.invalidateEquipmentNetwork();
+            InterceptArmorEquipEvent.interceptEvent(ref, senderPlayer);
         }
     }
 }

@@ -1,8 +1,8 @@
 {
     "Group": "Cosmetics",
     "Name": "Chloe's Cosmetic Armor",
-    "Version": "1.0.0",
-    "Description": "A mod that allows wearing armor purely for the cosmetics",
+    "Version": "1.1.0",
+    "Description": "An plugin that allows player to equip an armor set for cosmetic purposes, while retaining another set's stats",
     "Authors": [
         {
             "Name": "MtChloe05"

@@ -1,0 +1,54 @@
+{
+  "Model": "Resources/Misc/CCA_Mirror.blockymodel",
+  "Texture": "Resources/Misc/CCA_Mithril_Mirror.png",
+  "IconProperties": {
+    "Scale": 0.9,
+    "Rotation": [
+      0,
+      180,
+      315
+    ],
+    "Translation": [
+      9,
+      -9
+    ]
+  },
+  "Categories": [
+    "Items.Tools"
+  ],
+  "TranslationProperties": {
+    "Name": "items.CCA_Mithril_Mirror.name"
+  },
+  "Quality": "Epic",
+  "Interactions": {
+    "Secondary": "CCA_OpenMirrorRI"
+  },
+  "MaxStack": 1,
+  "Scale": 2,
+  "Icon": "Icons/ItemsGenerated/CCA_Mithril_Mirror.png",
+  "Recipe": {
+    "TimeSeconds": 1,
+    "Input": [
+      {
+        "ResourceTypeId": "",
+        "Quantity": 4,
+        "ItemId": "Ingredient_Bar_Mithril"
+      },
+      {
+        "ItemId": "Ingredient_Bar_Silver",
+        "Quantity": 1
+      }
+    ],
+    "OutputQuantity": 1,
+    "BenchRequirement": [
+      {
+        "Id": "Workbench",
+        "Type": "Crafting",
+        "Categories": [
+          "Workbench_Tools"
+        ],
+        "RequiredTierLevel": 3
+      }
+    ]
+  }
+}
