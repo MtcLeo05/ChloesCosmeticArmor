@@ -30,7 +30,6 @@
     "TimeSeconds": 1,
     "Input": [
       {
-        "ResourceTypeId": "",
         "Quantity": 4,
         "ItemId": "Ingredient_Bar_Iron"
       },
