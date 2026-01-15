@@ -50,5 +50,7 @@
         "RequiredTierLevel": 3
       }
     ]
-  }
+  },
+  "UsePlayerAnimations": true,
+  "PlayerAnimationsId": "Item"
 }

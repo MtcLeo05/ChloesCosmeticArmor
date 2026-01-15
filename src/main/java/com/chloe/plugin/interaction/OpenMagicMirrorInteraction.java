@@ -19,7 +19,7 @@ import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
 public class OpenMagicMirrorInteraction extends SimpleInstantInteraction {
 
-    public static BuilderCodec<OpenMagicMirrorInteraction> CODEC = BuilderCodec.<OpenMagicMirrorInteraction>builder(OpenMagicMirrorInteraction.class, OpenMagicMirrorInteraction::new)
+    public static BuilderCodec<OpenMagicMirrorInteraction> CODEC = BuilderCodec.builder(OpenMagicMirrorInteraction.class, OpenMagicMirrorInteraction::new)
         .build();
 
     @Override
@@ -30,7 +30,19 @@ public class OpenMagicMirrorInteraction extends SimpleInstantInteraction {
         Player player = store.getComponent(ref, Player.getComponentType());
         CCAData data = store.getComponent(ref, CCAData.INSTANCE);
 
-        if(player == null || data == null) return;
+        if(player == null) return;
+
+        if(data == null) {
+            player.getWorld().execute(() -> {
+                store.addComponent(ref, CCAData.INSTANCE, new CCAData());
+
+                PlayerRef playerRef = Universe.get().getPlayer(player.getDisplayName(), NameMatching.EXACT);
+
+                player.getPageManager().setPageWithWindows(ref, store, Page.Bench, true, new MagicMirrorMainWindow(playerRef.getUuid()));
+            });
+
+            return;
+        }
 
         PlayerRef playerRef = Universe.get().getPlayer(player.getDisplayName(), NameMatching.EXACT);
 

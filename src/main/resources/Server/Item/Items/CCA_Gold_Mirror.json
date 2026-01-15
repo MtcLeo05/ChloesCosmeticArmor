@@ -50,5 +50,8 @@
         "RequiredTierLevel": 2
       }
     ]
-  }
+  },
+  "UsePlayerAnimations": true,
+  "ItemSoundSetId": "ISS_Items_Gems",
+  "PlayerAnimationsId": "Item"
 }
