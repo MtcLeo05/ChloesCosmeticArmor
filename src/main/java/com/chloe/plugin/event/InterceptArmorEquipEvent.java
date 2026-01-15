@@ -1,11 +1,13 @@
 package com.chloe.plugin.event;
 
 import com.chloe.plugin.component.CCAData;
+import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.protocol.*;
 import com.hypixel.hytale.protocol.packets.entities.EntityUpdates;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.event.events.entity.LivingEntityInventoryChangeEvent;
 import com.hypixel.hytale.server.core.modules.entity.tracker.EntityTrackerSystems;
 import com.hypixel.hytale.server.core.receiver.IPacketReceiver;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -15,6 +17,8 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class InterceptArmorEquipEvent implements IPacketReceiver {
 
@@ -41,16 +45,31 @@ public class InterceptArmorEquipEvent implements IPacketReceiver {
 
         if (eu.updates == null || eu.updates.length == 0) return packet;
 
+        CCAData data;
         PlayerRef playerRef = Universe.get().getPlayer(playerUUID);
 
-        Ref<EntityStore> ref = playerRef.getReference();
-        Store<EntityStore> store = ref.getStore();
+        try {
+            Ref<EntityStore> ref = playerRef.getReference();
 
-        CCAData data = store.getComponent(ref, CCAData.INSTANCE);
+            Store<EntityStore> store = ref.getStore();
 
-        if (data == null) {
-            store.addComponent(ref, CCAData.INSTANCE, new CCAData());
             data = store.getComponent(ref, CCAData.INSTANCE);
+
+            if (data == null) {
+                store.addComponent(ref, CCAData.INSTANCE, new CCAData());
+                data = store.getComponent(ref, CCAData.INSTANCE);
+            }
+        } catch (IllegalStateException _) {
+            Holder<EntityStore> holder = playerRef.getHolder();
+
+            if(holder == null) return packet;
+
+            data = holder.getComponent(CCAData.INSTANCE);
+
+            if(data == null) {
+                holder.addComponent(CCAData.INSTANCE, new CCAData());
+                data = holder.getComponent(CCAData.INSTANCE);
+            }
         }
 
         Optional<String>[] armor = data.getReadyArmor();
@@ -150,6 +169,16 @@ public class InterceptArmorEquipEvent implements IPacketReceiver {
             }
 
             player.invalidateEquipmentNetwork();
+        });
+    }
+
+    public static void hookIntoEvent(LivingEntityInventoryChangeEvent event) {
+        if(!(event.getEntity() instanceof Player player)) return;
+
+        player.getWorld().execute(() -> {
+            Ref<EntityStore> ref = player.getReference();
+
+            InterceptArmorEquipEvent.interceptEvent(ref, player);
         });
     }
 }

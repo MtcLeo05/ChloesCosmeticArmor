@@ -37,12 +37,6 @@ public class ChloesCosmeticArmor extends JavaPlugin {
 
         getCodecRegistry(Interaction.CODEC).register("CCA_OpenMirror", OpenMagicMirrorInteraction.class, OpenMagicMirrorInteraction.CODEC);
 
-        getEventRegistry().registerGlobal(LivingEntityInventoryChangeEvent.class, event -> {
-            if(!(event.getEntity() instanceof Player player)) return;
-
-            Ref<EntityStore> ref = player.getReference();
-
-            InterceptArmorEquipEvent.interceptEvent(ref, player);
-        });
+        getEventRegistry().registerGlobal(LivingEntityInventoryChangeEvent.class, InterceptArmorEquipEvent::hookIntoEvent);
     }
 }
