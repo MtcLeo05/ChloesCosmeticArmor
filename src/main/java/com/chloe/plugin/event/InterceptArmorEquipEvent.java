@@ -12,13 +12,12 @@ import com.hypixel.hytale.server.core.modules.entity.tracker.EntityTrackerSystem
 import com.hypixel.hytale.server.core.receiver.IPacketReceiver;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
+import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class InterceptArmorEquipEvent implements IPacketReceiver {
 
@@ -45,37 +44,13 @@ public class InterceptArmorEquipEvent implements IPacketReceiver {
 
         if (eu.updates == null || eu.updates.length == 0) return packet;
 
-        CCAData data;
-        PlayerRef playerRef = Universe.get().getPlayer(playerUUID);
-
-        try {
-            Ref<EntityStore> ref = playerRef.getReference();
-
-            Store<EntityStore> store = ref.getStore();
-
-            data = store.getComponent(ref, CCAData.INSTANCE);
-
-            if (data == null) {
-                store.addComponent(ref, CCAData.INSTANCE, new CCAData());
-                data = store.getComponent(ref, CCAData.INSTANCE);
-            }
-        } catch (IllegalStateException _) {
-            Holder<EntityStore> holder = playerRef.getHolder();
-
-            if(holder == null) return packet;
-
-            data = holder.getComponent(CCAData.INSTANCE);
-
-            if(data == null) {
-                holder.addComponent(CCAData.INSTANCE, new CCAData());
-                data = holder.getComponent(CCAData.INSTANCE);
-            }
-        }
-
-        Optional<String>[] armor = data.getReadyArmor();
+        PlayerRef worldRef = Universe.get().getPlayer(this.playerUUID);
+        World world = Universe.get().getWorld(worldRef.getWorldUuid());
 
         boolean modified = false;
         EntityUpdate[] newEus = null;
+
+        UUID target;
 
         for (int i = 0; i < eu.updates.length; i++) {
             EntityUpdate upd = eu.updates[i];
@@ -84,8 +59,37 @@ public class InterceptArmorEquipEvent implements IPacketReceiver {
             }
 
             if (upd.networkId != this.netId) {
-                continue;
+                target = tryFindPlayer(upd.networkId, world);
+
+                if(target == null) continue;
+            } else {
+                target = this.playerUUID;
             }
+
+            CCAData data;
+            PlayerRef playerRef = Universe.get().getPlayer(target);
+
+            try {
+                Ref<EntityStore> ref = playerRef.getReference();
+                Store<EntityStore> store = ref.getStore();
+                data = store.getComponent(ref, CCAData.INSTANCE);
+
+                if (data == null) {
+                    store.addComponent(ref, CCAData.INSTANCE, new CCAData());
+                    data = store.getComponent(ref, CCAData.INSTANCE);
+                }
+            } catch (IllegalStateException _) {
+                Holder<EntityStore> holder = playerRef.getHolder();
+                if (holder == null) return packet;
+                data = holder.getComponent(CCAData.INSTANCE);
+
+                if (data == null) {
+                    holder.addComponent(CCAData.INSTANCE, new CCAData());
+                    data = holder.getComponent(CCAData.INSTANCE);
+                }
+            }
+
+            Optional<String>[] armor = data.getReadyArmor();
 
             if (upd.updates == null || upd.updates.length == 0) {
                 continue;
@@ -173,12 +177,26 @@ public class InterceptArmorEquipEvent implements IPacketReceiver {
     }
 
     public static void hookIntoEvent(LivingEntityInventoryChangeEvent event) {
-        if(!(event.getEntity() instanceof Player player)) return;
+        if (!(event.getEntity() instanceof Player player)) return;
 
         player.getWorld().execute(() -> {
             Ref<EntityStore> ref = player.getReference();
 
             InterceptArmorEquipEvent.interceptEvent(ref, player);
         });
+    }
+
+    private UUID tryFindPlayer(int networkId, World level) {
+        try {
+            for (Player player : level.getPlayers()) {
+                if (player.getNetworkId() == networkId)
+                    return player.getUuid();
+            }
+
+            return null;
+        } catch (Throwable _) {
+        }
+
+        return null;
     }
 }

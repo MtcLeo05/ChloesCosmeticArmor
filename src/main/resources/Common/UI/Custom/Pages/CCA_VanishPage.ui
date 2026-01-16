@@ -1,0 +1,72 @@
+$C = "../Common.ui";
+
+@StyledCheckBox = Group {
+    Anchor: (Height: 44, Bottom: 8);
+    Background: #1a2533;
+    LayoutMode: Left;
+
+    Label #Name {
+      Anchor: (Left: 16);
+      Style: (VerticalAlignment: Center, TextColor: #96a9be, RenderUppercase: false, FontSize: 18);
+      Text: @Name;
+    }
+
+    Group {
+      FlexWeight: 1;
+    }
+
+    $C.@CheckBox #CheckBox {
+      Anchor: (Width: 24, Height: 24, Right: 16);
+    }
+};
+
+$C.@PageOverlay {
+    $C.@Container {
+        Anchor: (Width: 600, Height: 300);
+
+        #Title {
+            Group {
+                $C.@Title {
+                    @Text = "Vanish Armor";
+                }
+            }
+        }
+
+        #Content {
+            LayoutMode: Left;
+            Padding: (Top: 15, Bottom: 15, Left: 20, Right: 20);
+
+            Group #LeftColumn {
+                LayoutMode: Top;
+                FlexWeight: 1;
+                Padding: (Right: 15);
+
+                @StyledCheckBox #VanishHead {
+                    #Name {
+                        Text: "Vanish Head";
+                    }
+                }
+
+                @StyledCheckBox #VanishChest {
+                    #Name {
+                        Text: "Vanish Chest";
+                    }
+                }
+
+                @StyledCheckBox #VanishHands {
+                    #Name {
+                        Text: "Vanish Hands";
+                    }
+                }
+
+                @StyledCheckBox #VanishLegs {
+                    #Name {
+                        Text: "Vanish Legs";
+                    }
+                }
+            }
+        }
+    }
+}
+
+$C.@BackButton {}

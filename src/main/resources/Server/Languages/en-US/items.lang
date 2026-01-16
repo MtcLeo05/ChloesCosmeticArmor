@@ -8,3 +8,5 @@ CCA_Mithril_Mirror.name = Mithril Mirror
 CCA_Onyxium_Mirror.name = Onyxium Mirror
 CCA_Prisma_Mirror.name = Prisma Mirror
 CCA_Thorium_Mirror.name = Thorium Mirror
+
+CCA_Mirror.description = Secondary Action: Equip Cosmetic Armor\nUse: Toggle Slot Vanish

@@ -17,11 +17,13 @@
     "Items.Tools"
   ],
   "TranslationProperties": {
-    "Name": "items.CCA_Cobalt_Mirror.name"
+    "Name": "items.CCA_Cobalt_Mirror.name",
+    "Description": "items.CCA_Mirror.description"
   },
   "Quality": "Epic",
   "Interactions": {
-    "Secondary": "CCA_OpenMirrorRI"
+    "Secondary": "CCA_OpenMirrorRI",
+    "Use": "CCA_OpenVanishRI"
   },
   "MaxStack": 1,
   "Scale": 2,

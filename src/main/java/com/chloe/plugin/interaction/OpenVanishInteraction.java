@@ -1,7 +1,8 @@
 package com.chloe.plugin.interaction;
 
 import com.chloe.plugin.component.CCAData;
-import com.chloe.plugin.gui.window.MagicMirrorMainWindow;
+import com.chloe.plugin.gui.page.MirrorVanishPage;
+import com.chloe.plugin.gui.window.MirrorMainWindow;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
@@ -17,9 +18,9 @@ import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
-public class OpenMagicMirrorInteraction extends SimpleInstantInteraction {
+public class OpenVanishInteraction extends SimpleInstantInteraction {
 
-    public static BuilderCodec<OpenMagicMirrorInteraction> CODEC = BuilderCodec.builder(OpenMagicMirrorInteraction.class, OpenMagicMirrorInteraction::new)
+    public static BuilderCodec<OpenVanishInteraction> CODEC = BuilderCodec.builder(OpenVanishInteraction.class, OpenVanishInteraction::new)
         .build();
 
     @Override
@@ -38,7 +39,7 @@ public class OpenMagicMirrorInteraction extends SimpleInstantInteraction {
 
                 PlayerRef playerRef = Universe.get().getPlayer(player.getDisplayName(), NameMatching.EXACT);
 
-                player.getPageManager().setPageWithWindows(ref, store, Page.Bench, true, new MagicMirrorMainWindow(playerRef.getUuid()));
+                player.getPageManager().setPageWithWindows(ref, store, Page.Bench, true, new MirrorMainWindow(playerRef.getUuid()));
             });
 
             return;
@@ -46,6 +47,6 @@ public class OpenMagicMirrorInteraction extends SimpleInstantInteraction {
 
         PlayerRef playerRef = Universe.get().getPlayer(player.getDisplayName(), NameMatching.EXACT);
 
-        player.getPageManager().setPageWithWindows(ref, store, Page.Bench, true, new MagicMirrorMainWindow(playerRef.getUuid()));
+        player.getPageManager().openCustomPage(ref, store, new MirrorVanishPage(playerRef));
     }
 }

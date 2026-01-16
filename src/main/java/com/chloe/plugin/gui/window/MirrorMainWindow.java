@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class MagicMirrorMainWindow extends Window implements ItemContainerWindow {
+public class MirrorMainWindow extends Window implements ItemContainerWindow {
 
     @Nonnull
     private final JsonObject windowData = new JsonObject();
@@ -33,7 +33,7 @@ public class MagicMirrorMainWindow extends Window implements ItemContainerWindow
     @Nullable
     private EventRegistration eventRegistration;
 
-    public MagicMirrorMainWindow(UUID playerUUID) {
+    public MirrorMainWindow(UUID playerUUID) {
         super(WindowType.Container);
 
         Ref<EntityStore> ref = Universe.get().getPlayer(playerUUID).getReference();

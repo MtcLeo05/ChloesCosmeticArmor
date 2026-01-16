@@ -33,7 +33,7 @@ public class CCATestItemVanishCommand extends AbstractPlayerCommand {
         super("cca-vanish-item", "Manually vanishes an item in one of the cosmetic armor slots");
 
         armorType = withRequiredArg("armor", "Armor slot to target", ArgTypes.STRING);
-        setPermissionGroup(GameMode.Adventure);
+        setPermissionGroups("OP");
     }
 
 
