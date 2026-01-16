@@ -7,8 +7,6 @@ import com.chloe.plugin.component.CCAData;
 import com.chloe.plugin.event.InterceptArmorEquipEvent;
 import com.chloe.plugin.interaction.OpenMirrorInteraction;
 import com.chloe.plugin.interaction.OpenVanishInteraction;
-import com.hypixel.hytale.server.core.command.system.CommandManager;
-import com.hypixel.hytale.server.core.console.ConsoleSender;
 import com.hypixel.hytale.server.core.event.events.entity.LivingEntityInventoryChangeEvent;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;

@@ -24,6 +24,22 @@ public class CCAData implements Component<EntityStore> {
             applyArmorFilters(data.armor);
         }, (data) -> data.armor)
         .add()
+        .append(new KeyedCodec<>("CCA_VanishHead", BuilderCodec.BOOLEAN), (data, value) -> {
+            data.headV = value;
+        }, (data) -> data.headV)
+        .add()
+        .append(new KeyedCodec<>("CCA_VanishChest", BuilderCodec.BOOLEAN), (data, value) -> {
+            data.chestV = value;
+        }, (data) -> data.chestV)
+        .add()
+        .append(new KeyedCodec<>("CCA_VanishHands", BuilderCodec.BOOLEAN), (data, value) -> {
+            data.handsV = value;
+        }, (data) -> data.handsV)
+        .add()
+        .append(new KeyedCodec<>("CCA_VanishLegs", BuilderCodec.BOOLEAN), (data, value) -> {
+            data.legsV = value;
+        }, (data) -> data.legsV)
+        .add()
         .build();
 
     private SimpleItemContainer armor;
